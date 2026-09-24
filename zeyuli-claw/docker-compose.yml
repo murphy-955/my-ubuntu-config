@@ -1,0 +1,12 @@
+services:
+  openclaw:
+    build: .
+    image: zeyuli-claw:latest
+    container_name: openclaw
+    restart: "no"
+    environment:
+      OPENCLAW_GATEWAY_TOKEN: token
+    ports:
+      - "18789:18789"
+    volumes:
+      - /home/zeyuli/middleware/zeyuli-claw/.openclaw:/home/node/.openclaw

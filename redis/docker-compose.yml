@@ -1,0 +1,10 @@
+services:
+  redis:
+    image: redis:7
+    container_name: redis
+    restart: "no"
+    command: redis-server --bind 0.0.0.0 --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - /home/zeyuli/middleware/redis/data:/data

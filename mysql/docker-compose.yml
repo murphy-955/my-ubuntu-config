@@ -1,0 +1,12 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    restart: "no"
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456a"
+      TZ: Asia/Shanghai
+    ports:
+      - "3306:3306"
+    volumes:
+      - /home/zeyuli/middleware/mysql/data:/var/lib/mysql
