@@ -1,0 +1,15 @@
+[Desktop Entry]
+X-SnapInstanceName=code
+Name=Visual Studio Code - URL Handler
+Comment=Code Editing. Redefined.
+GenericName=Text Editor
+X-SnapAppName=code
+X-SnapCommonID=code.desktop
+Exec=/snap/bin/code --force-user-env --ozone-platform=x11 --force-device-scale-factor=2 --open-url %U
+Icon=/snap/code/current/meta/gui/vscode.png
+Type=Application
+NoDisplay=true
+StartupNotify=true
+Categories=Utility;TextEditor;Development;IDE;
+MimeType=x-scheme-handler/vscode;
+Keywords=vscode;

@@ -1,0 +1,14 @@
+[Unit]
+Description=Apply fcitx5 input method environment variables
+# Ubuntu 的 gnome-session 启动时会强制把 QT_IM_MODULE/XMODIFIERS 写成 ibus，
+# 必须在图形会话目标达成之后再把这些变量改回 fcitx。
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/env XMODIFIERS=@im=fcitx QT_IM_MODULE=fcitx QT_IM_MODULES=wayland;fcitx SDL_IM_MODULE=fcitx /usr/bin/dbus-update-activation-environment --systemd XMODIFIERS QT_IM_MODULE QT_IM_MODULES SDL_IM_MODULE
+
+[Install]
+WantedBy=graphical-session.target
