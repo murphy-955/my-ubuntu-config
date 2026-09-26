@@ -1,0 +1,10 @@
+[Unit]
+Description=Force ALC235 headset jack to CTIA mode
+After=sound.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/alc235-force-ctia.sh
+
+[Install]
+WantedBy=multi-user.target

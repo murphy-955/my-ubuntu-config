@@ -1,0 +1,4 @@
+#!/bin/bash
+# 睡眠唤醒后重新强制 ALC235 CTIA 模式
+[ "$1" = "post" ] && /usr/local/bin/alc235-force-ctia.sh
+exit 0
