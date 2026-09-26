@@ -49,7 +49,7 @@ loglevel=7 ignore_loglevel earlycon=efifb keep_bootcon
 
 ### 2. 导出全部 ACPI 表
 
-从 `/dev/mem` 按 RSDP 物理地址（本机 0x6fe7e014）导出 RSDT/XSDT/DSDT/全部 SSDT（见 `~/acpi_tables/`），用 `iasl -d` 反编译分析。
+从 `/dev/mem` 按 RSDP 物理地址（本机 0x6fe7e014）导出 RSDT/XSDT/DSDT/全部 SSDT（工具见 `acpi-bios-fix/tools/dump_acpi.py`），用 `iasl -d` 反编译分析。
 
 ### 3. initrd 表覆盖 + 二分法定位坏表
 
@@ -73,7 +73,7 @@ loglevel=7 ignore_loglevel earlycon=efifb keep_bootcon
 
 ### 4. 键鼠"失灵"取证（排除法）
 
-写了后台诊断服务（`~/diag_input*.py`），在测试启动中采集：evdev 事件流、/proc/interrupts 增量、GPE 计数、100ms 级停顿检测。结论：
+写了后台诊断服务（`acpi-bios-fix/tools/diag_input.py`），在测试启动中采集：evdev 事件流、/proc/interrupts 增量、GPE 计数、100ms 级停顿检测。结论：
 
 - 无 GPE/中断风暴、无系统级停顿、CPU 频率正常；
 - USB 输入事件**有送达**（文本模式下实测按键/鼠标事件正常流动，日志里甚至有盲打触发的 PAM 认证记录）；
@@ -93,7 +93,7 @@ loglevel=7 ignore_loglevel earlycon=efifb keep_bootcon
 
 ### 1. 修补 22 号表（而非禁用，保留 AMD OverDrive 功能）
 
-源码修改（`~/acpi_fix/ssdt22_aod.dsl`，由反编译得来）：
+源码修改（`acpi-bios-fix/ssdt22_aod.dsl`，由反编译得来）：
 
 ```
 DefinitionBlock ("", "SSDT", 2, "AMD", "AOD     ", 0x00000001→0x00000002)  # 修订号+1（覆盖的前提）
@@ -146,13 +146,13 @@ initrd  /boot/acpi/ssdt22_aod_fix.cpio /boot/initrd.img-<版本>
 |---|---|
 | `/boot/acpi/ssdt22_aod_fix.cpio` | 修补版表（**勿删**，删了会回到 panic） |
 | `/etc/default/grub` | 含 early initrd 与 dcdebugmask 配置 |
-| `~/acpi_fix/ssdt22_aod.dsl/.aml` | 修补表源码（BIOS 更新后重建用） |
-| `~/acpi_tables/` | 固件全部 ACPI 表导出件（分析存档） |
-| `~/diag_input*.py`、`~/build_bisect.py` | 排查工具（已无用，可删） |
+| `my-ubuntu-config/acpi-bios-fix/` | 修复资产与装机指引（cpio、dsl 源码、install.sh、工具） |
+| `my-ubuntu-config/acpi-bios-fix/ssdt22_aod.dsl` | 修补表源码（BIOS 更新后重建用） |
+| `my-ubuntu-config/acpi-bios-fix/tools/` | 排查工具（导表、二分、输入诊断） |
 
 ## 六、后续维护
 
-- **如果华硕发布新 BIOS**：先用 `sudo python3 ~/acpi_tables/dump_acpi.py`（或按 RSDP 新地址）重新导出 22 号表，检查 `ASMI/ISMI` 冲突是否修复。若已修复，可删除 `/etc/default/grub` 中的 `GRUB_EARLY_INITRD_LINUX_CUSTOM` 行并 `sudo update-grub` 撤掉补丁。
+- **如果华硕发布新 BIOS**：先用 `sudo python3 my-ubuntu-config/acpi-bios-fix/tools/dump_acpi.py /tmp/acpi_new` 重新导出新固件的表，检查 AOD 表的 `ASMI/ISMI` 冲突是否修复。若已修复，可删除 `/etc/default/grub` 中的 `GRUB_EARLY_INITRD_LINUX_CUSTOM` 行并 `sudo update-grub` 撤掉补丁。
 - **内核升级无需任何操作**：GRUB 机制自动对所有内核条目生效。
 - 当前默认内核为主线 7.2.6（不随 Ubuntu 自动更新）；Ubuntu 官方内核条目同样带修复，可随时在 GRUB 菜单切换。
 - **建议向华硕反馈此固件 bug**（AOD 表与 DSDT 的 ASMI/ISMI 命名冲突），推动 BIOS 层面根治。
